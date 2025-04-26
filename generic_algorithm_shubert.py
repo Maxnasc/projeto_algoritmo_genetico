@@ -123,12 +123,27 @@ def mutation_generator(population: list, mutation_probability: float):
                     gene = 1
                 else:
                     gene = 0
+    return population
                     
-def swap_elite(population, new_population, elite_chromossomes):
-    elite_list = []
+def swap_elite(population, new_population, n_elite_chromossomes, scores, data_config):
+    # Separa os n_elite_chromossomes melhores da primeira população
+    elite_indices = sorted(scores.items(), key=lambda item: item[1], reverse=True)[:n_elite_chromossomes]
+    elite_indices = [item[0] for item in elite_indices]
+    elite_chromossomes = [population[chromossome_idx] for chromossome_idx in elite_indices]
+    
+    # Calcula os valores de score novamente
+    new_scores = fitness(new_population, data_config)
+    worse_indices = sorted(new_scores.items(), key=lambda item: item[1], reverse=False)[:n_elite_chromossomes]
+    worse_indices = [item[0] for item in worse_indices]
+    
+    # Troca os n_elite_chromossomes piores pelos melhores da última população
+    for idx_to_swap in range(n_elite_chromossomes):
+        new_population[worse_indices[idx_to_swap]] = elite_chromossomes[idx_to_swap]
+        
+    return new_population
 
 
-def evolutionary(population_size, number_of_genes, mutation_probability, probability_of_crossing, n_generations, data_config, competition_code, elite_chromossomes):
+def evolutionary(population_size, number_of_genes, mutation_probability, probability_of_crossing, n_generations, data_config, competition_code, n_elite_chromossomes):
     # Selecionar a primeria população
     population = generate_population(population_size, number_of_genes)
     
@@ -143,7 +158,14 @@ def evolutionary(population_size, number_of_genes, mutation_probability, probabi
         new_population = mutation_generator(population=new_population, mutation_probability=mutation_probability)
         
         # Elitismo
-        new_population = swap_elite(population, new_population, elite_chromossomes)
+        population = swap_elite(population, new_population, n_elite_chromossomes, scores, data_config)
+        
+    final_scores = fitness(population=population, data_config=data_config)
+    best_chromossome_idx = sorted(final_scores.items(), key=lambda item: item[1], reverse=True)[0]
+    best_chromossome_value = (1/best_chromossome_idx[1]) - 1
+    best_chromossome = population[best_chromossome_idx[0]]
+    
+    return best_chromossome, best_chromossome_value
         
 
 if __name__ == "__main__":
@@ -153,7 +175,7 @@ if __name__ == "__main__":
     
     mutation_probability = 0.05
     probability_of_crossing = 0.95
-    elite_chromossomes = 5
+    n_elite_chromossomes = 10
     
     data_config = {
         'x1': {'base': -10, 'precision': 0.000019074},
@@ -162,6 +184,7 @@ if __name__ == "__main__":
     
     n_generations = 30
 
-    evolutionary(population_size, number_of_genes, mutation_probability, probability_of_crossing, n_generations, data_config, competition_code='roda', elite_chromossomes=elite_chromossomes)
-    
+    best_chromossome, best_chromossome_value = evolutionary(population_size, number_of_genes, mutation_probability, probability_of_crossing, n_generations, data_config, competition_code='roda', n_elite_chromossomes=n_elite_chromossomes)
+    print (best_chromossome)
+    print (best_chromossome_value)
     a = 1
