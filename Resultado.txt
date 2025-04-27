@@ -1,0 +1,24 @@
+Melhor configuração Shubert: pop_size                                                          100
+n_generations                                                      30
+mutation_prob                                                    0.05
+crossover_prob                                                    0.9
+problem                                                       shubert
+selection_method                                              torneio
+fitness_values      [-142.27530896649353, -142.27530896649353, -14...
+mean                                                      -180.719754
+median                                                    -186.727832
+min                                                       -186.730901
+max                                                       -142.275309
+Name: 41, dtype: object
+Melhor configuração Camel: pop_size                                                          100
+n_generations                                                      30
+mutation_prob                                                    0.05
+crossover_prob                                                    0.8
+problem                                                         camel
+selection_method                                              torneio
+fitness_values      [-0.675482661221082, -0.854338900985141, -0.85...
+mean                                                        -1.006667
+median                                                      -1.031628
+min                                                         -1.031628
+max                                                         -0.675483
+Name: 47, dtype: object

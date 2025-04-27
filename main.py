@@ -6,9 +6,9 @@ from ga_algorithm import evolutionary
 
 if __name__ == "__main__":
     number_of_genes = 40
-    n_elite_chromossomes = 10
+    n_elite_chromossomes = 5
 
-    population_sizes = [100]  # fixo
+    population_sizes = [50, 100]  # fixo
     n_generations_list = [30]  # fixo
 
     mutation_probabilitys = [0.05, 0.10, 0.20]
@@ -87,39 +87,49 @@ if __name__ == "__main__":
 
     # Plotar boxplot para Shubert
     fig, ax = plt.subplots(figsize=(20, 10))
+
+    # Ordenar do pior para o melhor (maior mínimo -> menor mínimo)
+    df_shubert_sorted = df_shubert.sort_values(by='min', ascending=False)
+
     labels = []
     data = []
 
-    for idx, row in df_shubert.iterrows():
+    for idx, row in df_shubert_sorted.iterrows():
         label = f"{row['selection_method']}|mut={row['mutation_prob']}|cross={row['crossover_prob']}"
         labels.append(label)
         data.append(row["fitness_values"])
 
     ax.boxplot(data, showfliers=False)
     ax.set_xticklabels(labels, rotation=90)
-    ax.set_title("Shubert - Comparação de Configurações")
+    ax.set_title("Shubert - Comparação de Configurações (Ordenado)")
     ax.set_ylabel("Fitness Final")
     plt.tight_layout()
 
     # Plotar boxplot para Camel
     fig, ax = plt.subplots(figsize=(20, 10))
+
+    # Ordenar também para Camel
+    df_camel_sorted = df_camel.sort_values(by='min', ascending=False)
+
     labels = []
     data = []
 
-    for idx, row in df_camel.iterrows():
+    for idx, row in df_camel_sorted.iterrows():
         label = f"{row['selection_method']}|mut={row['mutation_prob']}|cross={row['crossover_prob']}"
         labels.append(label)
         data.append(row["fitness_values"])
 
     ax.boxplot(data, showfliers=False)
     ax.set_xticklabels(labels, rotation=90)
-    ax.set_title("Camel - Comparação de Configurações")
+    ax.set_title("Camel - Comparação de Configurações (Ordenado)")
     ax.set_ylabel("Fitness Final")
     plt.tight_layout()
     
     # Plot da evolução com os melhores parâmetros
     # Shubert
     best_shubert = df_shubert.loc[df_shubert['min'].idxmin()]
+    best_shubert_print = best_shubert.drop(columns='fitness_values')
+    print(f'Melhor configuração Shubert: {best_shubert_print}')
     valores_fitness = best_shubert['fitness_values']
     # Plotar
     plt.figure(figsize=(10,6))
@@ -135,6 +145,8 @@ if __name__ == "__main__":
     
     # camel
     best_camel = df_camel.loc[df_camel['min'].idxmin()]
+    best_camel_print = best_camel.drop(columns='fitness_values')
+    print(f'Melhor configuração Camel: {best_camel_print}')
     valores_fitness = best_camel['fitness_values']
     # Plotar
     plt.figure(figsize=(10,6))
